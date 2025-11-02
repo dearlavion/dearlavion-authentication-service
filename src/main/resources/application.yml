@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:admin@dearlavioncluster.xnanadi.mongodb.net/authentication-service?retryWrites=true&w=majority&appName=DearLavionCluster
+  main:
+    allow-circular-references: true
+
+server:
+  port: 8080
+
+jwt:
+  secret: change-this-super-secret-key-which-is-at-least-32-bytes
+  expiration: 3600000 # 1 hour

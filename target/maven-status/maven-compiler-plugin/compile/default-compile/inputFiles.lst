@@ -1,0 +1,8 @@
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/DearLavionAuthenticationServiceApplication.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/config/SecurityConfig.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/controller/AuthController.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/model/User.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/repository/UserRepository.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/security/JwtAuthenticationFilter.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/security/JwtUtil.java
+/Users/alysson/dev/backend/dearlavion-authentication-service/src/main/java/com/dearlavion/auth/service/UserService.java
