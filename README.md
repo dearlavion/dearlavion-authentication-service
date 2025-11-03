@@ -69,7 +69,8 @@ This design keeps the service **stateless** — no session data stored in memory
 ### ➕ Register
 
 ```bash
-POST /api/auth/register
+POST http://localhost:8080/api/auth/register
+Authentication: No Authentication
 Content-Type: application/json
 
 Request Body:
@@ -77,11 +78,12 @@ Request Body:
   "username": "john",
   "password": "mypassword"
 }
-
 ```
+![Register](assets/register.png)
 ### 🔑 Login
 ```bash
-POST /api/auth/login
+POST http://localhost:8080/api/auth/login
+Authentication: No Authentication
 Content-Type: application/json
 
 Request Body:
@@ -96,4 +98,25 @@ Response:
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+![Login](assets/login.png)
+
+### 🚀 Test token
+```bash
+GET http://localhost:8080/api/auth/hello
+Authentication: Bearer Token
+Content-Type: application/json
+Request Body: None
+
+{
+  "message": "Authenticated successfully!"
+}
+```
+### Use the token generated from login
+![Valid](assets/validToken.png)
+
+### Invalid token
+![Invalid](assets/invalidToken.png)
+
+
+
 
