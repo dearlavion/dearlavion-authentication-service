@@ -1,6 +1,6 @@
 package com.dearlavion.auth.controller;
 
-import com.dearlavion.auth.security.JwtUtil;
+import com.dearlavion.auth.service.JwtService;
 import com.dearlavion.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +16,25 @@ public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> req) {
-        var user = userService.register(req.get("username"), req.get("password"));
+        var user = userService.registerUser(req.get("username"), req.get("password"));
         return ResponseEntity.ok(Map.of("message", "User registered", "user", user.getUsername()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> req) {
-        var user = userService.findByUsername(req.get("username"))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var user = userService.loadUserByUsername(req.get("username"));
         if (!passwordEncoder.matches(req.get("password"), user.getPassword())) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user);
         return ResponseEntity.ok(Map.of("token", token));
     }
 
-    @PostMapping("/change-password")
+    /*@PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> req) {
         String username = req.get("username");
         String oldPassword = req.get("oldPassword");
@@ -46,7 +45,7 @@ public class AuthController {
             return ResponseEntity.status(400).body(Map.of("error", "Old password is incorrect"));
         }
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
-    }
+    }*/
 
     @GetMapping("/hello")
     public ResponseEntity<?> hello() {
