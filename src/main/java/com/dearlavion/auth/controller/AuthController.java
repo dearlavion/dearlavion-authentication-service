@@ -1,13 +1,16 @@
 package com.dearlavion.auth.controller;
 
+import com.dearlavion.auth.model.UserVO;
 import com.dearlavion.auth.service.JwtService;
 import com.dearlavion.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,13 +27,33 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "User registered", "user", user.getUsername()));
     }
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> req) {
         var user = userService.loadUserByUsername(req.get("username"));
         if (!passwordEncoder.matches(req.get("password"), user.getPassword())) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
         String token = jwtService.generateToken(user);
+        return ResponseEntity.ok(Map.of("token", token));
+    }*/
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserVO loginRequest) {
+        // ✅ Load the user by username or email (depending on your logic)
+        Optional<UserDetails> user = Optional.ofNullable(userService.loadUserByUsername(loginRequest.getUsername()));
+
+        if (user.isEmpty()) {
+            user = Optional.ofNullable(userService.loadUserByEmail(loginRequest.getEmail()));
+        }
+
+        // ✅ Validate password
+        if (user.isEmpty() || !passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+        }
+
+        // ✅ Generate JWT
+        String token = jwtService.generateToken(user.get());
+
         return ResponseEntity.ok(Map.of("token", token));
     }
 

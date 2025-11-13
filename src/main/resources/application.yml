@@ -2,6 +2,7 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://admin:admin@dearlavioncluster.xnanadi.mongodb.net/authentication-service?retryWrites=true&w=majority&appName=DearLavionCluster
+      auto-index-creation: true
   main:
     allow-circular-references: true
 
