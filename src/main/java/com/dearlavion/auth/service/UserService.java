@@ -1,6 +1,7 @@
 package com.dearlavion.auth.service;
 
 import com.dearlavion.auth.model.User;
+import com.dearlavion.auth.model.UserVO;
 import com.dearlavion.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +28,12 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
     }
 
-    public User registerUser(String username, String password) {
+    public User registerUser(UserVO userVO) {
         User user = User.builder()
-                .username(username)
-                .password(passwordEncoder.encode(password))
+                .username(userVO.getUsername())
+                .email(userVO.getEmail())
+                .phone(userVO.getPhone())
+                .password(passwordEncoder.encode(userVO.getPassword()))
                 .build();
         return userRepository.save(user);
     }

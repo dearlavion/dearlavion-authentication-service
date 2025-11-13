@@ -22,8 +22,8 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> req) {
-        var user = userService.registerUser(req.get("username"), req.get("password"));
+    public ResponseEntity<?> register(@RequestBody UserVO registerRequest) {
+        var user = userService.registerUser(registerRequest);
         return ResponseEntity.ok(Map.of("message", "User registered", "user", user.getUsername()));
     }
 
