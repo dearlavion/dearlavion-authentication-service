@@ -1,11 +1,14 @@
 package com.dearlavion.auth.controller;
 
+import com.dearlavion.auth.model.User;
 import com.dearlavion.auth.model.UserVO;
 import com.dearlavion.auth.service.JwtService;
 import com.dearlavion.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,19 +26,50 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserVO registerRequest) {
-        var user = userService.registerUser(registerRequest);
-        return ResponseEntity.ok(Map.of("message", "User registered", "user", user.getUsername()));
+        try {
+            var user = userService.registerUser(registerRequest);
+            return ResponseEntity.ok(Map.of(
+                    "message", "User registered successfully",
+                    "user", user.getUsername()
+            ));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(409).body(Map.of(
+                    "error", "User already exists"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Something went wrong"
+            ));
+        }
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> req) {
-        var user = userService.loadUserByUsername(req.get("username"));
-        if (!passwordEncoder.matches(req.get("password"), user.getPassword())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+    @GetMapping("/user/{username}")
+    public ResponseEntity<?> getUser(@PathVariable String username) {
+        try {
+            User user = (User) userService.loadUserByUsername(username);
+
+            if (user == null) {
+                return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+            }
+
+            // ✅ Convert to UserVO (avoid exposing password)
+            UserVO userVO = new UserVO();
+            userVO.setUsername(user.getUsername());
+            userVO.setEmail(user.getEmail());
+            userVO.setFirstname(user.getFirstname());
+            userVO.setLastname(user.getLastname());
+            userVO.setPhone(user.getPhone());
+            userVO.setImage(user.getImage());
+
+            return ResponseEntity.ok(userVO);
+
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal server error"));
         }
-        String token = jwtService.generateToken(user);
-        return ResponseEntity.ok(Map.of("token", token));
-    }*/
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserVO loginRequest) {

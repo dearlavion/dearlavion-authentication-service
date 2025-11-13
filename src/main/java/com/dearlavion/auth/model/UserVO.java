@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserVO {
-    private String id;  // ✅ Enforces unique usernames
+    private String id;
     private String username;
     private String firstname;
     private String lastname;
