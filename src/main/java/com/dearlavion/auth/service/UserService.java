@@ -37,4 +37,16 @@ public class UserService implements UserDetailsService {
                 .build();
         return userRepository.save(user);
     }
+
+    public User updateUser(String username, UserVO u) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (u.getFirstname() != null) user.setFirstname(u.getFirstname());
+        if (u.getLastname() != null) user.setLastname(u.getLastname());
+        if (u.getPhone() != null) user.setPhone(u.getPhone());
+        //if (u.getImage() != null) user.setImage(u.getImage());
+
+        return userRepository.save(user); // <-- this updates existing row
+    }
 }

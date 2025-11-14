@@ -43,6 +43,29 @@ public class AuthController {
         }
     }
 
+    @PatchMapping("/user/{username}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable String username,
+            @RequestBody UserVO u) {
+
+        try {
+            User updated = userService.updateUser(username, u);
+            return ResponseEntity.ok(Map.of(
+                    "message", "User updated successfully",
+                    "username", updated.getUsername()
+            ));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(Map.of(
+                    "error", "User not found"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Internal server error"
+            ));
+        }
+    }
+
+
     @GetMapping("/user/{username}")
     public ResponseEntity<?> getUser(@PathVariable String username) {
         try {
