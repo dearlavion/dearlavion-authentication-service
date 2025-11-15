@@ -131,4 +131,34 @@ public class AuthController {
     public ResponseEntity<?> hello() {
         return ResponseEntity.ok(Map.of("message", "Authenticated successfully!"));
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyToken(@RequestBody Map<String, String> req) {
+        String token = req.get("token");
+
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("valid", false, "error", "Token missing"));
+        }
+
+        try {
+            boolean isValid = jwtService.isTokenValid(token);
+
+            if (!isValid) {
+                return ResponseEntity.status(401).body(Map.of("valid", false));
+            }
+
+            String username = jwtService.extractUsername(token);
+            User user = (User) userService.loadUserByUsername(username);
+
+            return ResponseEntity.ok(Map.of(
+                    "valid", true,
+                    "username", username,
+                    "email", user.getEmail(),
+                    "userId", user.getId()
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("valid", false));
+        }
+    }
 }
