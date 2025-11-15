@@ -141,14 +141,20 @@ public class AuthController {
         }
 
         try {
-            boolean isValid = jwtService.isTokenValid(token);
+            String username = jwtService.extractUsername(token);
+            if (username == null) {
+                return ResponseEntity.status(401).body(Map.of("valid", false));
+            }
+
+            var userDetails = userService.loadUserByUsername(username);
+
+            boolean isValid = jwtService.isTokenValid(token, userDetails);
 
             if (!isValid) {
                 return ResponseEntity.status(401).body(Map.of("valid", false));
             }
 
-            String username = jwtService.extractUsername(token);
-            User user = (User) userService.loadUserByUsername(username);
+            User user = (User) userDetails;
 
             return ResponseEntity.ok(Map.of(
                     "valid", true,
@@ -161,4 +167,5 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("valid", false));
         }
     }
+
 }
